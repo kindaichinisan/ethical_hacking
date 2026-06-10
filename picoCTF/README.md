@@ -248,3 +248,33 @@ The source code for the training vault is here: VaultDoorTraining.java
 Read the VaultDoorTraining.java to understand the password is picoCTF{w4rm1ng_Up_w1tH_jAv4_000AXPNPN0i}
 
 
+# keygenme-py (Reverse Engineering, medium)
+Read the code and find hashlib.sha256(bUsername_trial).hexdigest()[4]. Do for idx 4, 5, 3, 6, 2, 7, 1, 8.
+Learning pt: hashlib.sha256(bUsername_trial) returns a SHA-256 hash object.
+.digest() returns raw 32-Byte hash.
+.hexdigest() returns 64-character hexadecimal string (1 Byte = 2 hexadecimal characters)
+
+Add these code.
+print(f"bUsername_trial: {bUsername_trial}")
+print(f"{hashlib.sha256(bUsername_trial).hexdigest()}")
+print(f"{key_part_static1_trial}{hashlib.sha256(bUsername_trial).hexdigest()[4]}{hashlib.sha256(bUsername_trial).hexdigest()[5]}{hashlib.sha256(bUsername_trial).hexdigest()[3]}{hashlib.sha256(bUsername_trial).hexdigest()[6]}{hashlib.sha256(bUsername_trial).hexdigest()[2]}{hashlib.sha256(bUsername_trial).hexdigest()[7]}{hashlib.sha256(bUsername_trial).hexdigest()[1]}{hashlib.sha256(bUsername_trial).hexdigest()[8]}{key_part_static2_trial}")
+
+# buffer overflow 0 (Binary Exploitation, medium)
+Let's start off simple, can you overflow the correct buffer? The program is available here. You can view source here.
+char input[100];
+char buf2[16];
+strcpy(buf2, input);
+writing 17 characters to input will cause technical overflow.
+fgets(flag,FLAGSIZE_MAX,f); reads a line from file f (opened from flag.txt) and stores it into the global buffer flag.
+signal(SIGSEGV, sigsegv_handler); This installs a signal handler for segmentation faults (SIGSEGV).
+SIGSEGV = signal raised when the program does something illegal in memory, such as:
+- invalid pointer dereference
+- stack corruption (buffer overflow)
+- accessing unmapped memory
+If this program crashes due to a segmentation fault, don’t terminate immediately—run this function instead.
+The function will print the flag.
+
+19B will not trigger a segmentation fault. 20B will.
+16 → safe (buf2)
+17–19 → padding / harmless overwrite
+20 → crosses into sensitive region → crash
