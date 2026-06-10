@@ -101,8 +101,17 @@ Add /cc6b1.html to website.
 
 # Python Wrangling (General skills, medium)
 Anaconda Prompt.
-python ende.py -d flag.txt.en
+Read ende.py to understand how to run it.
+sys.argv[0]=ende.py
+sys.argv[1]=-d
+sys.argv[2]
+sys.argv[3]
+python ende.py -d flag.txt.en or
+python ende.py -d flag.txt.en 720b6ad346f84cd483c60c7464dd95d4
 Type password 720b6ad346f84cd483c60c7464dd95d4 from password.txt
+sim_sala_bim.encode(): Converts the string into bytes using UTF-8 (default encoding)
+base64.b64encode(...): Encodes those bytes into Base64.
+c = Fernet(ssb_b64): This creates a Fernet encryption object using a key stored in ssb_b64
 
 # PW Crack 1 (General skills, easy)
 Can you crack the password to get the flag?
@@ -240,12 +249,18 @@ The only difficulty of this challenge is to realise that the flag was split into
 # Big Zip (General skills, easy)
 Unzip this archive and find the flag.
 grep -r -o "picoCTF{.*}" big-zip-files
+grep: Search tool for text patterns.
+-r: Recursive search through all files in directories.
+-o: Only output the matched portion, not the whole line.
+"picoCTF{.*}": This is a regex pattern
+Search every file under big-zip-files and extract all substrings that look like picoCTF flags.
 
 # vault-door-training (Reverse Engineering, easy)
 Your mission is to enter Dr. Evil's laboratory and retrieve the blueprints for his Doomsday Project. The laboratory is protected by a series of locked vault doors. Each door is controlled by a computer and requires a password to open. Unfortunately, our undercover agents have not been able to obtain the secret passwords for the vault doors, but one of our junior agents obtained the source code for each vault's computer! You will need to read the source code for each level to figure out what the password is for that vault door. As a warmup, we have created a replica vault in our training facility.
 
 The source code for the training vault is here: VaultDoorTraining.java
 Read the VaultDoorTraining.java to understand the password is picoCTF{w4rm1ng_Up_w1tH_jAv4_000AXPNPN0i}
+Password is hardcoded in VaultDoorTraining.java.
 
 
 # keygenme-py (Reverse Engineering, medium)
