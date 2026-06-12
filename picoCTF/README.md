@@ -293,3 +293,26 @@ The function will print the flag.
 16 → safe (buf2)
 17–19 → padding / harmless overwrite
 20 → crosses into sensitive region → crash
+
+# ASCII Numbers (General skills, medium)
+The ‘0x’ prefix in front of these numbers tells you that the number is in hexadecimal base. You could look up an ASCII table and solve this problem manually, but I would recommend looking at the hints for this problem for a more efficient solution.
+Use https://cyberchef.org/ From Hex
+
+# Picker I (Reverse Engineering, medium)
+What does def mean in Python? Reverse Engineering is just as much about knowing what you can skip over as it is focusing on the code in front of you. Don’t forget to look at the hints.
+Hints: Can you point the program to a function that does something useful for you?
+The function is win().
+Read the code to know that u need to type win. After that, u will get hexadecimal number. Use cyberchef to do.
+Learning pt: eval(user_input + '()'). If user_input is win, then this will execute win() which will reveal the flag
+
+# Intro to Assembly
+“Assembly” isn't just one language, but rather a whole class of languages. An assembly language is any language that a processor microchip uses. Being so tied into the hardware of computers, these languages are extremely fast, but they are difficult to work with since they lack most notions of advanced data structures and convenient syntax.
+
+What can be a single line of code in Python would be many instructions in an assembly language. So with assembly, even more than other languages, there's a lot we are best off ignoring to focus on the one piece of information that we really need to know. The next challenge will require exactly that.
+
+# Bit-O-Asm-1
+The “mov” instruction moves the second operand into the first operand.
+Can you figure out what is in the eax register? Put your answer in the picoCTF flag format: picoCTF{n} where n is the contents of the eax register in the decimal number base. If the answer was 0x11 your flag would be picoCTF{17}.
+
+Download the assembly dump here
+.
