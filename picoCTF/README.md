@@ -310,9 +310,87 @@ Learning pt: eval(user_input + '()'). If user_input is win, then this will execu
 
 What can be a single line of code in Python would be many instructions in an assembly language. So with assembly, even more than other languages, there's a lot we are best off ignoring to focus on the one piece of information that we really need to know. The next challenge will require exactly that.
 
-# Bit-O-Asm-1
+# Bit-O-Asm-1 (Reverse Engineering, medium)
 The “mov” instruction moves the second operand into the first operand.
 Can you figure out what is in the eax register? Put your answer in the picoCTF flag format: picoCTF{n} where n is the contents of the eax register in the decimal number base. If the answer was 0x11 your flag would be picoCTF{17}.
 
-Download the assembly dump here
-.
+Download the assembly dump here.
+
+# Assembly Pointers
+A pointer, abbreviated “PTR” in the disassembly listing, is a number that is interpreted as an address to a location for storing a value. It points to another location in the program where a value is stored.
+
+It’s like if you had a book where every letter was sequentially numbered from first to last. You could jump right to a letter by giving its number. This number is like a pointer in assembly programs, only instead of letters there is data and instructions at these addresses.
+
+# Bit-O-Asm-2 (Reverse Engineering, medium)
+<+15>:    mov    DWORD PTR [rbp-0x4],0x9fe1a
+<+22>:    mov    eax,DWORD PTR [rbp-0x4]
+Use Cyberchef to base 10 0x9fe1a=654874
+
+# Assembly Arithmetic
+Arithmetic in assembly is a little different. Both operands are used in the operation, as expected, but the result of the operation is stored in the first operand, wiping away its original contents.
+
+The next problem introduces the imul and add instructions. imul is multiplication, the operands are multiplied together and the result is stored in the first operand. add is addition, the operands are added together and the result is stored in the first operand.
+
+# Bit-O-Asm-3 (Reverse Engineering, medium)
+<+15>:    mov    DWORD PTR [rbp-0xc],0x9fe1a
+<+22>:    mov    DWORD PTR [rbp-0x8],0x4
+<+29>:    mov    eax,DWORD PTR [rbp-0xc]
+<+32>:    imul   eax,DWORD PTR [rbp-0x8]
+<+36>:    add    eax,0x1f5
+654874*4+501=2619997
+
+# Assembly Branching
+Just like Python, assembly programs are executed from top to bottom. Unlike Python, in assembly, you can jump to specific instructions, skipping everything in between them.
+
+A ‘jmp’ instruction is unconditional, it always jumps. In the disassembly listings given, you can tell where a jump goes by the function + offset given in angle brackets to the right of the address. The function the disassembly listings show is main and the offset to each line in the function is the first number on each line, also given in angle brackets.
+
+We represent conditional jumps by jcc. There is no jcc instruction, “cc” stands for conditional and there are many different options available to the assembly programmer, see this. The jcc we see in the next problem is jle. This is “jump if less or equal to”, and semantically, we’re checking the first operand against the second. This check happens at the cmp instruction, which is “compare”.
+
+# Bit-O-Asm-4 (Reverse Engineering, medium)
+<+15>:    mov    DWORD PTR [rbp-0x4],0x9fe1a
+<+22>:    cmp    DWORD PTR [rbp-0x4],0x2710
+<+29>:    jle    0x55555555514e <main+37> (no jump)
+<+31>:    sub    DWORD PTR [rbp-0x4],0x65
+<+35>:    jmp    0x555555555152 <main+41> (jump)
+<+37>:    add    DWORD PTR [rbp-0x4],0x65
+<+41>:    mov    eax,DWORD PTR [rbp-0x4]
+654874-101=654773
+
+# GDB
+GDB is a well-known debugger that can do disassembly as well. If you don’t have access to GDB on your own machine, I would recommend using our webshell to use GDB. If you already have some expertise in a different debugger/disassembler, by all means use that, but this playlist will be addressing these problems from a GDB perspective.
+
+Revisit the hints in Obedient Cat if you need a refresher on downloading challenge artifacts to your webshell.
+
+Start GDB by passing it the name of the program you’ve been given, i.e. $ gdb program_to_debug. If you need a refresher on how to make a file executable, see the hints in file-run1. This only matters if you run the program in GDB, but it’s a good habit to get into.
+
+Once it loads, disassemble main with the command: (gdb) disassemble main, at this point, you should be presented with a disassembly listing very alike to the ones you have been dealing with.
+
+# GDB baby step 1
+This problem is all about going from a binary program to a disassembly listing like we’ve been working with in Bit-O-Asm.
+gdb <program_name>
+disassemble main
+
+Learning point:
+Intel syntax: mov  eax, 0x86342 (dest<-src)
+AT&T syntax (used by gdb disassemble): mov $0x86342, %eax (immediate vle requires $, register requires %, src->dest)
+
+# Static and Dynamic Analysis
+What we did in Bit-O-Asm was static analysis. Static analysis is quite simply reading code. We’re about to introduce a dynamic analysis technique. Dynamic analysis runs code to find out what it does. Sometimes, rather than pouring over every line in a program, we can gain insight quickly by running it under controlled conditions.
+
+# Breakpoints
+Breakpoints are the core of debugging, a dynamic technique. You can set a breakpoint somewhere in code and when the computer goes to execute that statement, it will instead pause and wait for direction. We will use a breakpoint to jump over complicated code and examine the register directly.
+
+# Static analysis of debugger0_b
+Download the artifact from the next challenge.
+Disassemble it like you did for the previous challenge.
+Statically analyze it; read it, try to understand what is happening.
+Notice how the code jumps backwards! The same block of code is executed multiple times. This is how a loop looks in assembly language. To statically figure out what is in eax at main+56 we’d have to precisely calculate how many times this loop runs. This is possible, but in this case, we can easily set a breakpoint to pause program execution after the loop. To set a breakpoint and examine eax, follow these steps:
+
+(gdb) break *main+59 This sets a breakpoint at the instruction immediately after the one in question. This guarantees that the instruction in question has actually been executed. WJ: This is not accurate.
+(gdb) run This lets the program run until it tries to execute the instruction at our breakpoint.
+(gdb) info registers eax This prints out our answer in hexadecimal and decimal.
+
+# GDB baby step 2 (Reverse Engineering, medium)
+break *main+59
+run
+info registers eax
