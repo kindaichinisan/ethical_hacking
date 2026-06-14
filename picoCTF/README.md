@@ -394,3 +394,29 @@ Notice how the code jumps backwards! The same block of code is executed multiple
 break *main+59
 run
 info registers eax
+
+# Examining memory
+Just like in the previous problem, we want to pause program execution after a certain instruction has executed, but this time we want to examine memory instead of a register.
+
+Set a breakpoint after the constant is written.
+Run the program.
+Examine memory like so: (gdb) x/4xb $rbp-0x4
+You’ll notice that the bytes are in reverse order. This is called little endian and it means that for any given number, the least significant bytes are written first. Big endian is the opposite, and this is what is more natural to people, the most significant bytes are written first. Little endianness is an aspect of the particular assembly language we are using: x86-64.
+
+# GDB baby step 3
+gdb debugger0_c
+disassemble main
+   0x0000000000401106 <+0>:	endbr64 
+   0x000000000040110a <+4>:	push   %rbp
+   0x000000000040110b <+5>:	mov    %rsp,%rbp
+   0x000000000040110e <+8>:	mov    %edi,-0x14(%rbp)
+   0x0000000000401111 <+11>:	mov    %rsi,-0x20(%rbp)
+   0x0000000000401115 <+15>:	movl   $0x2262c96b,-0x4(%rbp)
+   0x000000000040111c <+22>:	mov    -0x4(%rbp),%eax
+   0x000000000040111f <+25>:	pop    %rbp
+   0x0000000000401120 <+26>:	ret    
+break *main+22
+run
+x/4xb $rbp-0x4
+0x7fffffffdf3c:	0x6b	0xc9	0x62	0x22
+picoCTF{0x6bc96222}
